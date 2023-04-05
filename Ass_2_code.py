@@ -273,6 +273,13 @@ co2_emissions = co2_emissions.set_index('Country Name', drop=True)
 co2_emissions, co2_emissions_tr = transpose(co2_emissions)
 
 
+#Mean CO2 emissions
+# new_co2=co2_emissions[['Country name','1990','2000','2010','2019']]
+# new_co2=new_co2.set_index('Country Name')
+# # new_co2=new_co2.loc[my_countries]
+# print(new_co2.groupby('Country name').mean())
+
+
 #Grouped barplot of CO2 Emissions of my countries for every 6 years from
 #1990 to 2020
 co2 = co2_emissions.loc[my_countries, '1990':'2020':6].copy()
@@ -314,3 +321,4 @@ correlation_coefficient_heatmap(germany, 'Germany', 'jet')
 #Creating data of india and plotting correlation heatmap
 india = country_wise_data(my_data_list_tr, indicator_list, 'India')
 correlation_coefficient_heatmap(india, 'India', 'gist_rainbow')
+
