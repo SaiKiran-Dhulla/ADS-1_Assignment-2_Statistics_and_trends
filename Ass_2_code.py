@@ -5,11 +5,42 @@ import matplotlib.pyplot as plt
 
 
 def file_reader(filename):
+    '''
+    file_reader creates new dataframe with given file path
+
+    Parameters
+    ----------
+    filename : STR
+        String of filepath.
+
+    Returns
+    -------
+    df : Dataframe
+        Dataframe of given filepath.
+
+    '''
     df = pd.read_csv(filename, skiprows=(4))
+    
     return df
 
 
 def transpose(df):
+    '''
+    transpose function will create transpose of given dataframe
+
+    Parameters
+    ----------
+    df : Dataframe
+        Dataframe for which transpose to be found.
+
+    Returns
+    -------
+    df : Dataframe
+        Given dataframe.
+    df_transpose : Dataframe
+        Transpose of given dataframe.
+
+    '''
     df_transpose = df.transpose()
     df_transpose.columns = df.index
     df_transpose = df_transpose.iloc[1:, :]
@@ -18,16 +49,32 @@ def transpose(df):
 
 
 def grouped_barplot(data, xlabel, ylabel, title):
+    '''
+    grouped_barplot produces grouped bar graph
+
+    Parameters
+    ----------
+    data : dataframe
+        dataframe for which bar graph to be plot.
+    xlabel : STR
+        xlabel used in bar graph.
+    ylabel : STR
+        ylabel used in bar graph.
+    title : STR
+        title used in bar graph.
+
+    '''
     num_columns = len(data.columns)
     wid = 0.8/num_columns
     offst = wid/2
     x_tks = data.index
+    col=['b','g','r','c','m','0.7']
 
     plt.figure()
     sb_plot = plt.subplot()
     for i, year in enumerate(data.columns):
         sb_plot.bar([tick+offst+wid*i for tick in range(len(x_tks))],
-                    data[year], width=wid, label=year)
+                    data[year], width=wid, label=year, color=col[i])
 
     sb_plot.set_xlabel(xlabel)
     sb_plot.set_ylabel(ylabel)
@@ -41,15 +88,48 @@ def grouped_barplot(data, xlabel, ylabel, title):
 
 
 def country_wise_data(my_data_list, column_names, country):
+    '''
+    country_wise_data will create a new dataframe with only one country data
+
+    Parameters
+    ----------
+    my_data_list : List
+        List of dataframes.
+    column_names : List
+        List of strings used as new dataframe column names.
+    country : STR
+        String of my country.
+
+    Returns
+    -------
+    country_wise_data : Dataframe
+        Dataframe with only my country data.
+
+    '''
     country_wise_data = pd.DataFrame()
     for i in range(len(my_data_list)):
-        country_wise_data[column_names[i]] = my_data_list[i].loc['1990':'2019',
-                                                                 country].astype(int)
+        country_wise_data[column_names[i]] = my_data_list[i
+                                                          ].loc['1990':'2019',
+                                                                 country
+                                                                 ].astype(int)
 
     return country_wise_data
 
 
 def correlation_coefficient_heatmap(my_data, title, cmap):
+    '''
+    Creates correlation heatmap of given data columns
+
+    Parameters
+    ----------
+    my_data : Datfarame
+        Dataframe of my country.
+    title : STR
+        String used as title in plot.
+    cmap : STR
+        cmap attribute for colour.
+
+    '''
     corr_matrix = np.array(my_data.corr())
     print('Correlation Coefficient matrix of ', title, ' on indicators is')
     print(corr_matrix, '\n')
@@ -127,7 +207,7 @@ population_total = population_total.set_index('Country Name', drop=True)
 population_total, population_total_tr = transpose(population_total)
 
 
-#Grouped barplot of Population of my countries for every 6 years from
+#Grouped barplot of Population Total of my countries for every 6 years from
 #1990 to 2020
 population = population_total.loc[my_countries, '1990':'2020':6].copy()
 grouped_barplot(population, 'Country Name', 'Population Total',
@@ -145,7 +225,7 @@ plt.title('Population Total of my countries')
 plt.legend(title='Country', bbox_to_anchor=(1, 1))
 plt.show()
 
-#Reading Population Total file
+#Reading Urban Population Total file
 urban_population = file_reader("urban_population.csv")
 urban_population = urban_population.set_index('Country Name', drop=True)
 
@@ -153,7 +233,7 @@ urban_population = urban_population.set_index('Country Name', drop=True)
 urban_population, urban_population_tr = transpose(urban_population)
 
 
-#Grouped barplot of Population of my countries for every 6 years from
+#Grouped barplot of Urban Population of my countries for every 6 years from
 #1990 to 2020
 urban_pop = urban_population.loc[my_countries, '1990':'2020':6].copy()
 grouped_barplot(urban_pop, 'Country Name', 'Urban Population',
@@ -171,7 +251,21 @@ plt.title('Urban Population of my countries')
 plt.legend(title='Country', bbox_to_anchor=(1, 1))
 plt.show()
 
-#Reading Population Total file
+#Calculating skewness and kurtosis of Urban Population
+
+urb_sk=[]
+urb_kurt=[]
+urb_sk_kurt=pd.DataFrame()
+urb_sk_kurt.index=urban_pop_tr.columns
+for i in urban_pop_tr.columns:
+    urb_sk.append(urban_pop_tr[i].skew())
+    urb_kurt.append(urban_pop_tr[i].kurtosis())
+urb_sk_kurt['Skewness']=urb_sk
+urb_sk_kurt['Kurtosis']=urb_kurt
+print('Skewness and Kurtosis of Urban Population is:')
+print(urb_sk_kurt, '\n')
+
+#Reading CO2 Emissions Total file
 co2_emissions = file_reader("co2_emissions.csv")
 co2_emissions = co2_emissions.set_index('Country Name', drop=True)
 
@@ -179,7 +273,7 @@ co2_emissions = co2_emissions.set_index('Country Name', drop=True)
 co2_emissions, co2_emissions_tr = transpose(co2_emissions)
 
 
-#Grouped barplot of Population of my countries for every 6 years from
+#Grouped barplot of CO2 Emissions of my countries for every 6 years from
 #1990 to 2020
 co2 = co2_emissions.loc[my_countries, '1990':'2020':6].copy()
 grouped_barplot(co2, 'Country Name', 'CO2 Emissions in kt',
@@ -207,11 +301,11 @@ indicator_list = ['Forest Area', 'Agricultural Land Area',
 
 #Creating data of australia and plotting correlation heatmap
 australia = country_wise_data(my_data_list_tr, indicator_list, 'Australia')
-correlation_coefficient_heatmap(australia, 'Australia', 'jet')
+correlation_coefficient_heatmap(australia, 'Australia', 'Spectral_r')
 
 #Creating data of china and plotting correlation heatmap
 china = country_wise_data(my_data_list_tr, indicator_list, 'China')
-correlation_coefficient_heatmap(china, 'China', 'jet')
+correlation_coefficient_heatmap(china, 'China', 'ocean')
 
 #Creating data of germany and plotting correlation heatmap
 germany = country_wise_data(my_data_list_tr, indicator_list, 'Germany')
@@ -219,5 +313,4 @@ correlation_coefficient_heatmap(germany, 'Germany', 'jet')
 
 #Creating data of india and plotting correlation heatmap
 india = country_wise_data(my_data_list_tr, indicator_list, 'India')
-correlation_coefficient_heatmap(india, 'India', 'jet')
-
+correlation_coefficient_heatmap(india, 'India', 'gist_rainbow')
