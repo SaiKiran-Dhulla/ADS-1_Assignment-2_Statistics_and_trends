@@ -190,11 +190,12 @@ co2_tr = co2_emissions_tr.loc['1990':'2020', my_countries].copy()
 plt.figure()
 for i in co2_tr.columns:
     plt.plot(co2_tr.index, co2_tr[i], label=i)
-plt.xticks(co2_tr.index[::10])
+plt.xticks(co2_tr.index[::5])
 plt.xlabel('Year')
 plt.ylabel('CO2 Emissions in kt')
 plt.title('CO2 Emissions of my countries')
 plt.legend(title='Country', bbox_to_anchor=(1, 1))
+plt.savefig('CO2_Emissions', bbox_inches='tight',dpi=450)
 plt.show()
 
 my_data_list = [forest_area, agricultural_land,
@@ -220,12 +221,3 @@ correlation_coefficient_heatmap(germany, 'Germany', 'jet')
 india = country_wise_data(my_data_list_tr, indicator_list, 'India')
 correlation_coefficient_heatmap(india, 'India', 'jet')
 
-#Creating data of united kingdom and plotting correlation heatmap
-united_kingdom = country_wise_data(
-    my_data_list_tr, indicator_list, 'United Kingdom')
-correlation_coefficient_heatmap(united_kingdom, 'United Kingdom', 'jet')
-
-#Creating data of united states and plotting correlation heatmap
-united_states = country_wise_data(
-    my_data_list_tr, indicator_list, 'United States')
-correlation_coefficient_heatmap(united_states, 'United States', 'jet')
